@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const roleSchema = new mongoose.Schema(
+const permissionSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -13,13 +13,17 @@ const roleSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    permissions: [
+    module: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Module",
+      required: true,
+    },
+    actions: 
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Permission",
+        ref: "Action",
         required: true,
       },
-    ],
     isActive: {
       type: Boolean,
       default: true,
@@ -34,9 +38,9 @@ const roleSchema = new mongoose.Schema(
   }
 );
 
-// Create a compound index for name to ensure uniqueness
-roleSchema.index({ name: 1 }, { unique: true });
+// Create a compound index for module and actions to ensure uniqueness
+permissionSchema.index({ module: 1, actions: 1 }, { unique: true });
 
-const Role = mongoose.model("Role", roleSchema);
+const Permission = mongoose.model("Permission", permissionSchema);
 
-module.exports = Role;
+module.exports = Permission;

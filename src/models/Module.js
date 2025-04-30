@@ -1,25 +1,23 @@
 const mongoose = require("mongoose");
 
-const roleSchema = new mongoose.Schema(
+const moduleSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
-      trim: true,
       unique: true,
+      trim: true,
     },
     description: {
       type: String,
       required: true,
       trim: true,
     },
-    permissions: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Permission",
-        required: true,
-      },
-    ],
+    version: {
+      type: String,
+      required: true,
+      default: "1.0.0",
+    },
     isActive: {
       type: Boolean,
       default: true,
@@ -34,9 +32,6 @@ const roleSchema = new mongoose.Schema(
   }
 );
 
-// Create a compound index for name to ensure uniqueness
-roleSchema.index({ name: 1 }, { unique: true });
+const Module = mongoose.model("Module", moduleSchema);
 
-const Role = mongoose.model("Role", roleSchema);
-
-module.exports = Role;
+module.exports = Module;

@@ -25,7 +25,7 @@ A Node.js application implementing role-based access control (RBAC) using Expres
    ```
 3. Create a `.env` file in the root directory with the following variables:
    ```
-   PORT=3000
+   PORT=3003
    MONGODB_URI=mongodb://localhost:27017/rbac_db
    JWT_SECRET=your_jwt_secret_key_here
    NODE_ENV=development

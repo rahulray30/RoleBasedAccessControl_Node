@@ -5,7 +5,9 @@ const mongoose = require("mongoose");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 const roleRoutes = require("./routes/roleRoutes");
+const moduleRoutes = require("./routes/moduleRoutes");
 const authRoutes = require("./routes/authRoutes");
+const actionRoutes = require("./routes/actionRoutes");
 const initializeSuperAdmin = require("./config/initSuperAdmin");
 
 const app = express();
@@ -39,13 +41,18 @@ app.use("/api/auth", authRoutes);
 // Role routes
 app.use("/api/roles", roleRoutes);
 
+// Module routes (no authentication required)
+app.use("/api/modules", moduleRoutes);
+
+app.use("/api/actions", actionRoutes);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: "Something went wrong!" });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(

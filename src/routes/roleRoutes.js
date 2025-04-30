@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { auth, authorize } = require("../middleware/auth");
 const roleController = require("../controllers/roleController");
+const superadminAuth = require("../middleware/superadminAuth");
 
 /**
  * @swagger
@@ -12,6 +13,7 @@ const roleController = require("../controllers/roleController");
  *       required:
  *         - name
  *         - description
+ *         - permissions
  *       properties:
  *         name:
  *           type: string
@@ -19,9 +21,17 @@ const roleController = require("../controllers/roleController");
  *         description:
  *           type: string
  *           description: Description of the role
+ *         permissions:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Array of permission IDs associated with this role
  *         isActive:
  *           type: boolean
  *           description: Whether the role is active
+ *         metadata:
+ *           type: object
+ *           description: Additional metadata for the role
  */
 
 /**
@@ -45,16 +55,22 @@ const roleController = require("../controllers/roleController");
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Role'
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: Not authenticated
  *       403:
- *         description: Only superadmin can create roles
+ *         description: Not authorized (not a superadmin)
+ *       404:
+ *         description: Permission not found
  */
-router.post("/", auth, authorize("superadmin"), roleController.createRole);
+router.post("/", [auth, superadminAuth], roleController.createRole);
 
 /**
  * @swagger
  * /api/roles:
  *   get:
- *     summary: Get all roles
+ *     summary: Get all roles (Superadmin only)
  *     tags: [Roles]
  *     security:
  *       - bearerAuth: []
@@ -67,14 +83,18 @@ router.post("/", auth, authorize("superadmin"), roleController.createRole);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Role'
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not authorized (not a superadmin)
  */
-router.get("/", auth, roleController.getRoles);
+router.get("/", [auth, superadminAuth], roleController.getRoles);
 
 /**
  * @swagger
  * /api/roles/{id}:
  *   get:
- *     summary: Get role by ID
+ *     summary: Get role by ID (Superadmin only)
  *     tags: [Roles]
  *     security:
  *       - bearerAuth: []
@@ -91,8 +111,14 @@ router.get("/", auth, roleController.getRoles);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Role'
+ *       401:
+ *         description: Not authenticated
+ *       403:
+ *         description: Not authorized (not a superadmin)
+ *       404:
+ *         description: Role not found
  */
-router.get("/:id", auth, roleController.getRole);
+router.get("/:id", [auth, superadminAuth], roleController.getRole);
 
 /**
  * @swagger
@@ -117,10 +143,14 @@ router.get("/:id", auth, roleController.getRole);
  *     responses:
  *       200:
  *         description: Role updated successfully
+ *       401:
+ *         description: Not authenticated
  *       403:
- *         description: Only superadmin can update roles
+ *         description: Not authorized (not a superadmin)
+ *       404:
+ *         description: Role or Permission not found
  */
-router.put("/:id", auth, authorize("superadmin"), roleController.updateRole);
+router.put("/:id", [auth, superadminAuth], roleController.updateRole);
 
 /**
  * @swagger
@@ -139,9 +169,13 @@ router.put("/:id", auth, authorize("superadmin"), roleController.updateRole);
  *     responses:
  *       200:
  *         description: Role deleted successfully
+ *       401:
+ *         description: Not authenticated
  *       403:
- *         description: Only superadmin can delete roles
+ *         description: Not authorized (not a superadmin)
+ *       404:
+ *         description: Role not found
  */
-router.delete("/:id", auth, authorize("superadmin"), roleController.deleteRole);
+router.delete("/:id", [auth, superadminAuth], roleController.deleteRole);
 
 module.exports = router;
